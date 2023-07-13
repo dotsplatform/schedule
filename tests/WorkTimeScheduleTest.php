@@ -342,6 +342,23 @@ class WorkTimeScheduleTest extends TestCase
         );
     }
 
+    public function testFindSlotByTimestampExpectsSlot(): void
+    {
+        $expectedStartTime = '12:00';
+        $schedule = WorkTimeGenerator::generateWithCustomSlots();
+        $expectedTime = Carbon::createFromTimeString('2023-07-13 12:30:00', $this->getBaseTimeZone());
+        $slot = $schedule->findSlotByTimeStamp($expectedTime->getTimestamp(), $this->getBaseTimeZone());
+        $this->assertEquals($expectedStartTime, $slot->getStart());
+    }
+
+    public function testFindSlotByTimestampExpectsNull(): void
+    {
+        $schedule = WorkTimeGenerator::generateWithCustomSlots();
+        $expectedTime = Carbon::createFromTimeString('2023-07-13 23:00:00', $this->getBaseTimeZone());
+        $slot = $schedule->findSlotByTimeStamp($expectedTime->getTimestamp(), $this->getBaseTimeZone());
+        $this->assertNull($slot);
+    }
+
     private function getCarbonNow(): Carbon
     {
         return Carbon::now($this->getBaseTimeZone());
