@@ -41,7 +41,7 @@ class Slots extends Collection
 
     public function getNearestSlots(int $timestamp, string $timezone): static
     {
-        $time = Carbon::createFromTimestamp($timestamp, $timezone)->format('H:i');
+        $time = $this->createTimeFromTimestamp($timestamp, $timezone);
         return $this->filter(
             fn (Slot $slot) => ($slot->getEnd() > $time) && ($slot->getStart() > $time),
         );
@@ -57,5 +57,18 @@ class Slots extends Collection
         )->toArray();
 
         return array_values($slotsTimestamps);
+    }
+
+    public function findSlotByTimeStamp(int $timestamp, string $timezone): ?Slot
+    {
+        $time = $this->createTimeFromTimestamp($timestamp, $timezone);
+        return $this->first(
+            fn(Slot $slot) => $slot->getStart() <= $time && $slot->getEnd() >= $time
+        );
+    }
+
+    private function createTimeFromTimestamp(int $timestamp, string $timezone): string
+    {
+        return Carbon::createFromTimestamp($timestamp, $timezone)->format('H:i');
     }
 }
