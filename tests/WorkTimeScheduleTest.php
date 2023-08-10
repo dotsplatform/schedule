@@ -329,6 +329,27 @@ class WorkTimeScheduleTest extends TestCase
         );
     }
 
+    public function testExpectsNextTuesdayIfCurrentAlreadyInactiveByTime(): void
+    {
+        $time = $this->getCarbonNow()->setDaysFromStartOfWeek(2)->setTimeFromTimeString('15:00');
+        $schedule = WorkTimeGenerator::generateWithCustomSlots([
+            $time->dayOfWeekIso - 1 => [
+                'end' => '16:00'
+            ]
+        ]);
+
+        $slots = $schedule->getTimestampsSlotsByDays($time->getTimestamp());
+        $this->assertNotEquals(
+            (clone $time)->startOfDay()->getTimestamp(),
+            $slots[0]['date'],
+        );
+        $nextTuesdayDate = Carbon::createFromTimestamp( $slots[6]['date'], $this->getBaseTimeZone());
+        $this->assertTrue($nextTuesdayDate->isTuesday());
+        $this->assertNotEmpty(
+            $slots[6]['times'],
+        );
+    }
+
     public function testFindNearestSlotIfTimeIsGreatThatStartOfSlotExpectsNextSlot(): void
     {
         $time = $this->getCarbonNow()->setTimeFromTimeString('10:30');
