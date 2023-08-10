@@ -25,18 +25,21 @@ class Day extends DTO
         return parent::fromArray($data);
     }
 
-    public function getNearestSlots(int $timestamp, string $timezone): Slots
+    public function getNearestSlots(Carbon $dayDate, int $timestamp, string $timezone): Slots
     {
-        if ($this->isSameDay($timestamp, $timezone)) {
+        if ($this->isSameDay($dayDate, $timestamp, $timezone)) {
             return $this->getSlots()->getNearestSlots($timestamp, $timezone);
         }
 
         return $this->getSlots();
     }
 
-    public function isSameDay(int $timestamp, string $timezone): bool
+    public function isSameDay(Carbon $dayDate, int $timestamp, string $timezone): bool
     {
         $time = Carbon::createFromTimestamp($timestamp, $timezone);
+        if (!$dayDate->isSameDay($time)) {
+            return false;
+        }
         return $time->dayOfWeekIso - 1 === $this->getId();
     }
 

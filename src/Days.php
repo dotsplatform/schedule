@@ -85,7 +85,7 @@ class Days extends Collection
         if (!$weekDay) {
             return Slots::empty();
         }
-        return $weekDay->getNearestSlots($startTime, $timezone);
+        return $weekDay->getNearestSlots($day, $startTime, $timezone);
     }
 
     public function isWorkingDay(int $timestamp, string $timezone): bool
