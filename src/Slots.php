@@ -63,7 +63,7 @@ class Slots extends Collection
     {
         $time = $this->createTimeFromTimestamp($timestamp, $timezone);
         return $this->first(
-            fn(Slot $slot) => $slot->getStart() <= $time && $slot->getEnd() > $time
+            fn(Slot $slot) => $slot->getStart() < $time && $slot->getEnd() >= $time
         );
     }
 

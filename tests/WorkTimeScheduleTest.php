@@ -377,7 +377,7 @@ class WorkTimeScheduleTest extends TestCase
         $expectedStartTime = '10:00';
         $expectedEndTime = '12:00';
         $schedule = WorkTimeGenerator::generateWithCustomSlots();
-        $expectedTime = Carbon::createFromTimeString('2023-07-13 10:00:00', $this->getBaseTimeZone());
+        $expectedTime = Carbon::createFromTimeString('2023-07-13 12:00:00', $this->getBaseTimeZone());
         $slot = $schedule->findSlotByTimeStamp($expectedTime->getTimestamp(), $this->getBaseTimeZone());
         $this->assertEquals($expectedStartTime, $slot->getStart());
         $this->assertEquals($expectedEndTime, $slot->getEnd());
