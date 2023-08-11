@@ -372,10 +372,21 @@ class WorkTimeScheduleTest extends TestCase
         $this->assertEquals($expectedStartTime, $slot->getStart());
     }
 
-    public function testFindSlotByTimestampExpectsNextSlotIfSlotStartAndNextSlotEndHaveEqualsTime(): void
+    public function testFindSlotByTimestampExpectsNextSlotIfStrictFalse(): void
     {
         $expectedStartTime = '10:00';
         $expectedEndTime = '12:00';
+        $schedule = WorkTimeGenerator::generateWithCustomSlots();
+        $expectedTime = Carbon::createFromTimeString('2023-07-13 12:00:00', $this->getBaseTimeZone());
+        $slot = $schedule->findSlotByTimeStamp($expectedTime->getTimestamp(), $this->getBaseTimeZone(), false);
+        $this->assertEquals($expectedStartTime, $slot->getStart());
+        $this->assertEquals($expectedEndTime, $slot->getEnd());
+    }
+
+    public function testFindSlotByTimestampExpectsSlotIfStrictIsTrue(): void
+    {
+        $expectedStartTime = '12:00';
+        $expectedEndTime = '14:00';
         $schedule = WorkTimeGenerator::generateWithCustomSlots();
         $expectedTime = Carbon::createFromTimeString('2023-07-13 12:00:00', $this->getBaseTimeZone());
         $slot = $schedule->findSlotByTimeStamp($expectedTime->getTimestamp(), $this->getBaseTimeZone());

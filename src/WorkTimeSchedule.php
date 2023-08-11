@@ -78,9 +78,9 @@ class WorkTimeSchedule extends DTO
         return $this->getDays()->getTimestampsSlotsByDays($startTime, $this->getTimezone(), $daysCount);
     }
 
-    public function findSlotByTimeStamp(int $timestamp, string $timezone): ?Slot
+    public function findSlotByTimeStamp(int $timestamp, string $timezone, bool $strict = true): ?Slot
     {
-        return $this->getDays()->findSlotByTimeStamp($timestamp, $timezone);
+        return $this->getDays()->findSlotByTimeStamp($timestamp, $timezone, $strict);
     }
 
     private function getCurrentWeekDay(): int
