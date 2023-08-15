@@ -363,32 +363,48 @@ class WorkTimeScheduleTest extends TestCase
         );
     }
 
-    public function testFindSlotByTimestampExpectsSlot(): void
+    public function testFindSlotByStartTimestampExpectsSlot(): void
     {
-        $expectedStartTime = '12:00';
+        $expectedStartTime = '10:00';
+        $expectedEndTime = '12:00';
         $schedule = WorkTimeGenerator::generateWithCustomSlots();
-        $expectedTime = Carbon::createFromTimeString('2023-07-13 12:30:00', $this->getBaseTimeZone());
-        $slot = $schedule->findSlotByTimeStamp($expectedTime->getTimestamp(), $this->getBaseTimeZone());
+        $expectedTime = Carbon::createFromTimeString('2023-07-13 10:00:00', $this->getBaseTimeZone());
+        $slot = $schedule->findSlotByStartTimestamp($expectedTime->getTimestamp(), $this->getBaseTimeZone());
         $this->assertEquals($expectedStartTime, $slot->getStart());
+        $this->assertEquals($expectedEndTime, $slot->getEnd());
     }
 
-    public function testFindSlotByTimestampExpectsNextSlotIfSlotStartAndNextSlotEndHaveEqualsTime(): void
+    public function testFindSlotByStartTimestampExpectsSlotIfTimeIsNotBorderOfSlot(): void
+    {
+        $expectedStartTime = '10:00';
+        $expectedEndTime = '12:00';
+        $schedule = WorkTimeGenerator::generateWithCustomSlots();
+        $expectedTime = Carbon::createFromTimeString('2023-07-13 10:30:00', $this->getBaseTimeZone());
+        $slot = $schedule->findSlotByStartTimestamp($expectedTime->getTimestamp(), $this->getBaseTimeZone());
+        $this->assertEquals($expectedStartTime, $slot->getStart());
+        $this->assertEquals($expectedEndTime, $slot->getEnd());
+    }
+
+    public function testFindSlotByEndTimestampExpectsSlot(): void
     {
         $expectedStartTime = '10:00';
         $expectedEndTime = '12:00';
         $schedule = WorkTimeGenerator::generateWithCustomSlots();
         $expectedTime = Carbon::createFromTimeString('2023-07-13 12:00:00', $this->getBaseTimeZone());
-        $slot = $schedule->findSlotByTimeStamp($expectedTime->getTimestamp(), $this->getBaseTimeZone());
+        $slot = $schedule->findSlotByEndTimestamp($expectedTime->getTimestamp(), $this->getBaseTimeZone());
         $this->assertEquals($expectedStartTime, $slot->getStart());
         $this->assertEquals($expectedEndTime, $slot->getEnd());
     }
 
-    public function testFindSlotByTimestampExpectsNull(): void
+    public function testFindSlotByEndTimestampExpectsSlotIfTimeIsNotBorderOfSlot(): void
     {
+        $expectedStartTime = '10:00';
+        $expectedEndTime = '12:00';
         $schedule = WorkTimeGenerator::generateWithCustomSlots();
-        $expectedTime = Carbon::createFromTimeString('2023-07-13 23:00:00', $this->getBaseTimeZone());
-        $slot = $schedule->findSlotByTimeStamp($expectedTime->getTimestamp(), $this->getBaseTimeZone());
-        $this->assertNull($slot);
+        $expectedTime = Carbon::createFromTimeString('2023-07-13 11:30:00', $this->getBaseTimeZone());
+        $slot = $schedule->findSlotByEndTimestamp($expectedTime->getTimestamp(), $this->getBaseTimeZone());
+        $this->assertEquals($expectedStartTime, $slot->getStart());
+        $this->assertEquals($expectedEndTime, $slot->getEnd());
     }
 
     private function getCarbonNow(): Carbon

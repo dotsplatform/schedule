@@ -109,10 +109,16 @@ class Days extends Collection
             $this->findLastDaySlotEndTime($timestamp, $timezone) >= $timestamp;
     }
 
-    public function findSlotByTimeStamp(int $timestamp, string $timezone): ?Slot
+    public function findSlotByEndTimestamp(int $timestamp, string $timezone): ?Slot
     {
         $day = $this->findDayForTimestamp($timestamp, $timezone);
-        return $day?->getSlots()->findSlotByTimeStamp($timestamp, $timezone);
+        return $day?->getSlots()->findSlotByEndTimestamp($timestamp, $timezone);
+    }
+
+    public function findSlotByStartTimestamp(int $timestamp, string $timezone): ?Slot
+    {
+        $day = $this->findDayForTimestamp($timestamp, $timezone);
+        return $day?->getSlots()->findSlotByStartTimestamp($timestamp, $timezone);
     }
 
     public function findFirstDaySlotStartTime(int $timestamp, string $timezone): ?int
