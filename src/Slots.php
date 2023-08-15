@@ -59,26 +59,12 @@ class Slots extends Collection
         return array_values($slotsTimestamps);
     }
 
-    public function findSlotByTimeStamp(int $timestamp, string $timezone, bool $strict = true): ?Slot
-    {
-        $time = $this->createTimeFromTimestamp($timestamp, $timezone);
-        if ($strict) {
-            return $this->first(
-                fn(Slot $slot) => $slot->getEnd() > $time,
-            );
-        }
-
-        return $this->first(
-            fn(Slot $slot) => $slot->getEnd() >= $time,
-        );
-    }
-
     public function findSlotByEndTimestamp(int $timestamp, string $timezone): ?Slot
     {
         $time = $this->createTimeFromTimestamp($timestamp, $timezone);
 
         return $this->first(
-            fn(Slot $slot) => $slot->getEnd() === $time,
+            fn(Slot $slot) => $slot->getStart() < $time && $slot->getEnd() >= $time
         );
     }
 
@@ -87,7 +73,7 @@ class Slots extends Collection
         $time = $this->createTimeFromTimestamp($timestamp, $timezone);
 
         return $this->first(
-            fn(Slot $slot) => $slot->getStart() === $time,
+            fn(Slot $slot) => $slot->getStart() <= $time && $slot->getEnd() > $time
         );
     }
 

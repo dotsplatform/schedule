@@ -109,12 +109,6 @@ class Days extends Collection
             $this->findLastDaySlotEndTime($timestamp, $timezone) >= $timestamp;
     }
 
-    public function findSlotByTimeStamp(int $timestamp, string $timezone, bool $strict = true): ?Slot
-    {
-        $day = $this->findDayForTimestamp($timestamp, $timezone);
-        return $day?->getSlots()->findSlotByTimeStamp($timestamp, $timezone, $strict);
-    }
-
     public function findSlotByEndTimestamp(int $timestamp, string $timezone): ?Slot
     {
         $day = $this->findDayForTimestamp($timestamp, $timezone);
