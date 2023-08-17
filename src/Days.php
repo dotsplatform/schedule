@@ -57,6 +57,12 @@ class Days extends Collection
         ];
     }
 
+    public function getNearestSlot(int $timestamp, string $timezone): ?Slot
+    {
+        $nearestStartTime = $this->getNearestStartTime($timestamp, $timezone);
+        return $this->findSlotByStartTimestamp($nearestStartTime, $timezone);
+    }
+
     public function getNearestStartTime(int $timestamp, string $timezone): ?int
     {
         $nearestSlot = null;
@@ -125,14 +131,14 @@ class Days extends Collection
     {
         $dayTime = $this->createDateFromTimestamp($timestamp, $timezone);
         $day = $this->findDayForTime($dayTime);
-        return $day?->getSlots()->first()?->getDayStartTimeTimestamp($dayTime);
+        return $day?->getSlots()->first()?->getDayStartTimeTimestamp($dayTime->getTimestamp(), $timezone);
     }
 
     public function findLastDaySlotEndTime(int $timestamp, string $timezone): ?int
     {
         $dayTime = $this->createDateFromTimestamp($timestamp, $timezone);
         $day = $this->findDayForTime($dayTime);
-        return $day?->getSlots()->last()?->getDayEndTimeTimestamp($dayTime);
+        return $day?->getSlots()->last()?->getDayEndTimeTimestamp($dayTime->getTimestamp(), $timezone);
     }
 
     public function findActiveDayForTime(Carbon $time): ?Day

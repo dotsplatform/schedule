@@ -27,15 +27,17 @@ class Slot extends DTO
         parent::assertConstructDataIsValid($data);
     }
 
-    public function getDayStartTimeTimestamp(Carbon $day): int
+    public function getDayStartTimeTimestamp(int $timestamp, string $timezone): int
     {
+        $day = Carbon::createFromTimestamp($timestamp, $timezone);
         return $day->startOfDay()
             ->setTimeFromTimeString($this->getStart())
             ->getTimestamp();
     }
 
-    public function getDayEndTimeTimestamp(Carbon $day): int
+    public function getDayEndTimeTimestamp(int $timestamp, string $timezone): int
     {
+        $day = Carbon::createFromTimestamp($timestamp, $timezone);
         return $day->startOfDay()
             ->setTimeFromTimeString($this->getEnd())
             ->getTimestamp();
