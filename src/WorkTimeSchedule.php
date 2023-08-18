@@ -73,6 +73,11 @@ class WorkTimeSchedule extends DTO
         return $this->getDays()->getNearestStartTime($timestamp, $this->timezone);
     }
 
+    public function getNearestSlot(int $timestamp): ?Slot
+    {
+        return $this->getDays()->getNearestSlot($timestamp, $this->timezone);
+    }
+
     public function getTimestampsSlotsByDays(int $startTime, int $daysCount = 14): array
     {
         return $this->getDays()->getTimestampsSlotsByDays($startTime, $this->getTimezone(), $daysCount);
