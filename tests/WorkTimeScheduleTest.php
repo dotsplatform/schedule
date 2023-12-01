@@ -407,21 +407,28 @@ class WorkTimeScheduleTest extends TestCase
         $this->assertEquals($expectedEndTime, $slot->getEnd());
     }
 
-    public function testGenerateTimestampFromStringByDeadlineTimestamp(): void
+    public function testGetStartTimestampFromStringByDeadlineTimestamp(): void
     {
-        $expectedStartTime = '10:00';
-        $expectedEndTime = '12:00';
         $schedule = WorkTimeGenerator::generateWithCustomSlots();
-        $startTimestamp= Carbon::createFromTimeString('2023-07-13 10:00', $this->getBaseTimeZone())->getTimestamp();
+        $startTimestamp = Carbon::createFromTimeString('2023-07-13 10:00', $this->getBaseTimeZone())->getTimestamp();
         $deadlineTime = Carbon::createFromTimeString('2023-07-13 13:50', $this->getBaseTimeZone())->getTimestamp();
         $slot = $schedule->findSlotByStartTimestamp($startTimestamp, $this->getBaseTimeZone());
         $this->assertEquals(
-            $expectedStartTime,
-            Carbon::createFromTimestamp($slot->getStartTimestamp($deadlineTime))->format('H:i'),
+            $startTimestamp,
+            $slot->getStartTimestamp($deadlineTime, $this->getBaseTimeZone()),
         );
+    }
+
+    public function testGetEndTimestampFromStringByDeadlineTimestamp(): void
+    {
+        $schedule = WorkTimeGenerator::generateWithCustomSlots();
+        $startTimestamp = Carbon::createFromTimeString('2023-07-13 10:00', $this->getBaseTimeZone())->getTimestamp();
+        $endTimestamp = Carbon::createFromTimeString('2023-07-13 12:00', $this->getBaseTimeZone())->getTimestamp();
+        $deadlineTime = Carbon::createFromTimeString('2023-07-13 13:50', $this->getBaseTimeZone())->getTimestamp();
+        $slot = $schedule->findSlotByStartTimestamp($startTimestamp, $this->getBaseTimeZone());
         $this->assertEquals(
-            $expectedEndTime,
-            Carbon::createFromTimestamp($slot->getEndTimestamp($deadlineTime))->format('H:i'),
+            $endTimestamp,
+            $slot->getEndTimestamp($deadlineTime, $this->getBaseTimeZone()),
         );
     }
 

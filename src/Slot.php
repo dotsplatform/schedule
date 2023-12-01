@@ -53,16 +53,16 @@ class Slot extends DTO
         return $this->end;
     }
 
-    public function getStartTimestamp(int $timestamp): int
+    public function getStartTimestamp(int $timestamp, string $timezone): int
     {
-        return Carbon::createFromTimestamp($timestamp)
+        return Carbon::createFromTimestamp($timestamp, $timezone)
             ->setTimeFromTimeString($this->getStart())
             ->getTimestamp();
     }
 
-    public function getEndTimestamp(int $timestamp): int
+    public function getEndTimestamp(int $timestamp, string $timezone): int
     {
-        return Carbon::createFromTimestamp($timestamp)
+        return Carbon::createFromTimestamp($timestamp, $timezone)
             ->setTimeFromTimeString($this->getEnd())
             ->getTimestamp();
     }
