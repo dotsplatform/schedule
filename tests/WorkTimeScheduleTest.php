@@ -422,10 +422,9 @@ class WorkTimeScheduleTest extends TestCase
     public function testGetEndTimestampFromStringByDeadlineTimestamp(): void
     {
         $schedule = WorkTimeGenerator::generateWithCustomSlots();
-        $startTimestamp = Carbon::createFromTimeString('2023-07-13 10:00', $this->getBaseTimeZone())->getTimestamp();
         $endTimestamp = Carbon::createFromTimeString('2023-07-13 12:00', $this->getBaseTimeZone())->getTimestamp();
         $deadlineTime = Carbon::createFromTimeString('2023-07-13 13:50', $this->getBaseTimeZone())->getTimestamp();
-        $slot = $schedule->findSlotByStartTimestamp($startTimestamp, $this->getBaseTimeZone());
+        $slot = $schedule->findSlotByEndTimestamp($endTimestamp, $this->getBaseTimeZone());
         $this->assertEquals(
             $endTimestamp,
             $slot->getEndTimestamp($deadlineTime, $this->getBaseTimeZone()),
