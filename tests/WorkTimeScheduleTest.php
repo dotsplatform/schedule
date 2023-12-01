@@ -5,6 +5,7 @@ namespace Tests;
 use Carbon\Carbon;
 use Dots\Day;
 use Dots\WorkTimeSchedule;
+use Tests\Generators\SlotGenerator;
 use Tests\Generators\WorkTimeGenerator;
 
 /**
@@ -407,27 +408,31 @@ class WorkTimeScheduleTest extends TestCase
         $this->assertEquals($expectedEndTime, $slot->getEnd());
     }
 
-    public function testGetStartTimestampFromStringByDeadlineTimestamp(): void
+    public function testGetStartTimestamp(): void
     {
-        $schedule = WorkTimeGenerator::generateWithCustomSlots();
-        $startTimestamp = Carbon::createFromTimeString('2023-07-13 10:00', $this->getBaseTimeZone())->getTimestamp();
-        $deadlineTime = Carbon::createFromTimeString('2023-07-13 13:50', $this->getBaseTimeZone())->getTimestamp();
-        $slot = $schedule->findSlotByStartTimestamp($startTimestamp, $this->getBaseTimeZone());
+        $slot = SlotGenerator::generate();
+        $expectedTimestamp = Carbon::createFromTimeString('2023-07-13 10:00', $this->getBaseTimeZone())->getTimestamp();
+        $dayTimestamp = Carbon::createFromTimeString('2023-07-13 13:50', $this->getBaseTimeZone())->getTimestamp();
+
+        $startTimestamp = $slot->getStartTimestamp($dayTimestamp, $this->getBaseTimeZone());
+
         $this->assertEquals(
+            $expectedTimestamp,
             $startTimestamp,
-            $slot->getStartTimestamp($deadlineTime, $this->getBaseTimeZone()),
         );
     }
 
-    public function testGetEndTimestampFromStringByDeadlineTimestamp(): void
+    public function testGetEndTimestamp(): void
     {
-        $schedule = WorkTimeGenerator::generateWithCustomSlots();
-        $endTimestamp = Carbon::createFromTimeString('2023-07-13 12:00', $this->getBaseTimeZone())->getTimestamp();
-        $deadlineTime = Carbon::createFromTimeString('2023-07-13 13:50', $this->getBaseTimeZone())->getTimestamp();
-        $slot = $schedule->findSlotByEndTimestamp($endTimestamp, $this->getBaseTimeZone());
+        $slot = SlotGenerator::generate();
+        $expectedTimestamp = Carbon::createFromTimeString('2023-07-13 12:00', $this->getBaseTimeZone())->getTimestamp();
+        $dayTimestamp = Carbon::createFromTimeString('2023-07-13 13:50', $this->getBaseTimeZone())->getTimestamp();
+
+        $endTimestamp = $slot->getEndTimestamp($dayTimestamp, $this->getBaseTimeZone());
+
         $this->assertEquals(
+            $expectedTimestamp,
             $endTimestamp,
-            $slot->getEndTimestamp($deadlineTime, $this->getBaseTimeZone()),
         );
     }
 
