@@ -169,16 +169,9 @@ class WorkTimeGenerator
         $startTime = Carbon::createFromFormat('H:i', $start, self::getBaseTimeZone());
         $endTime = Carbon::createFromFormat('H:i', $end, self::getBaseTimeZone());
         $countOfSlots = (int)(($endTime->hour - $startTime->hour) / $hoursInterval);
-        $slots = [];
 
-        for ($i = 0; $i < $countOfSlots; $i++) {
-            $slots[] = [
-                'start' => $startTime->format('H:i'),
-                'end' => (clone $startTime)->addMinutes($hoursInterval * 60)->format('H:i'),
-            ];
+        $slots = SlotGenerator::generateEntities($countOfSlots, $startTime, ($hoursInterval * 60));
 
-            $startTime = $startTime->addMinutes($hoursInterval * 60);
-        }
         return Day::fromArray([
             'id' => $id,
             'status' => $status,

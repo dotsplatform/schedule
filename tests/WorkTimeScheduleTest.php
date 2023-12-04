@@ -5,6 +5,7 @@ namespace Tests;
 use Carbon\Carbon;
 use Dots\Day;
 use Dots\WorkTimeSchedule;
+use Tests\Generators\SlotGenerator;
 use Tests\Generators\WorkTimeGenerator;
 
 /**
@@ -405,6 +406,34 @@ class WorkTimeScheduleTest extends TestCase
         $slot = $schedule->findSlotByEndTimestamp($expectedTime->getTimestamp(), $this->getBaseTimeZone());
         $this->assertEquals($expectedStartTime, $slot->getStart());
         $this->assertEquals($expectedEndTime, $slot->getEnd());
+    }
+
+    public function testGetStartTimestamp(): void
+    {
+        $slot = SlotGenerator::generate();
+        $expectedTimestamp = Carbon::createFromTimeString('2023-07-13 10:00', $this->getBaseTimeZone())->getTimestamp();
+        $dayTimestamp = Carbon::createFromTimeString('2023-07-13 13:50', $this->getBaseTimeZone())->getTimestamp();
+
+        $startTimestamp = $slot->getStartTimestamp($dayTimestamp, $this->getBaseTimeZone());
+
+        $this->assertEquals(
+            $expectedTimestamp,
+            $startTimestamp,
+        );
+    }
+
+    public function testGetEndTimestamp(): void
+    {
+        $slot = SlotGenerator::generate();
+        $expectedTimestamp = Carbon::createFromTimeString('2023-07-13 12:00', $this->getBaseTimeZone())->getTimestamp();
+        $dayTimestamp = Carbon::createFromTimeString('2023-07-13 13:50', $this->getBaseTimeZone())->getTimestamp();
+
+        $endTimestamp = $slot->getEndTimestamp($dayTimestamp, $this->getBaseTimeZone());
+
+        $this->assertEquals(
+            $expectedTimestamp,
+            $endTimestamp,
+        );
     }
 
     private function getCarbonNow(): Carbon
