@@ -21,7 +21,7 @@ class Slots extends Collection
     public static function fromArray(array $data): static
     {
         $slots = array_map(
-            fn(array $item) => Slot::fromArray($item),
+            fn (array $item) => Slot::fromArray($item),
             $data,
         );
         usort($slots, function (
@@ -43,14 +43,14 @@ class Slots extends Collection
     {
         $time = $this->createTimeFromTimestamp($timestamp, $timezone);
         return $this->filter(
-            fn(Slot $slot) => ($slot->getEnd() > $time) && ($slot->getStart() > $time),
+            fn (Slot $slot) => ($slot->getEnd() > $time) && ($slot->getStart() > $time),
         );
     }
 
     public function getDaySlotsTimestamps(Carbon $day): array
     {
         $slotsTimestamps = $this->map(
-            fn(Slot $slot) => [
+            fn (Slot $slot) => [
                 'start' => (clone $day)->setTimeFromTimeString($slot->getStart())->getTimestamp(),
                 'end' => (clone $day)->setTimeFromTimeString($slot->getEnd())->getTimestamp(),
             ],
@@ -64,7 +64,7 @@ class Slots extends Collection
         $time = $this->createTimeFromTimestamp($timestamp, $timezone);
 
         return $this->first(
-            fn(Slot $slot) => $slot->getStart() < $time && $slot->getEnd() >= $time
+            fn (Slot $slot) => $slot->getStart() < $time && $slot->getEnd() >= $time
         );
     }
 
@@ -73,7 +73,7 @@ class Slots extends Collection
         $time = $this->createTimeFromTimestamp($timestamp, $timezone);
 
         return $this->first(
-            fn(Slot $slot) => $slot->getStart() <= $time && $slot->getEnd() > $time
+            fn (Slot $slot) => $slot->getStart() <= $time && $slot->getEnd() > $time
         );
     }
 

@@ -21,7 +21,7 @@ class Days extends Collection
     {
         return new static(
             array_map(
-                fn(array $item) => Day::fromArray($item),
+                fn (array $item) => Day::fromArray($item),
                 $data,
             )
         );
@@ -152,7 +152,7 @@ class Days extends Collection
     public function findActiveDay(int $id): ?Day
     {
         return $this->first(
-            fn(Day $day) => $day->getId() === $id && $day->isActive(),
+            fn (Day $day) => $day->getId() === $id && $day->isActive(),
         );
     }
 
@@ -170,7 +170,7 @@ class Days extends Collection
     public function findDay(int $id): ?Day
     {
         return $this->first(
-            fn(Day $day) => $day->getId() === $id,
+            fn (Day $day) => $day->getId() === $id,
         );
     }
 
