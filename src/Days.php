@@ -60,6 +60,9 @@ class Days extends Collection
     public function getNearestSlot(int $timestamp, string $timezone): ?Slot
     {
         $nearestStartTime = $this->getNearestStartTime($timestamp, $timezone);
+        if (is_null($nearestStartTime)) {
+            return null;
+        }
         return $this->findSlotByStartTimestamp($nearestStartTime, $timezone);
     }
 
