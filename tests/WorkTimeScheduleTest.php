@@ -344,7 +344,7 @@ class WorkTimeScheduleTest extends TestCase
             (clone $time)->startOfDay()->getTimestamp(),
             $slots[0]['date'],
         );
-        $nextTuesdayDate = Carbon::createFromTimestamp( $slots[6]['date'], $this->getBaseTimeZone());
+        $nextTuesdayDate = Carbon::createFromTimestamp($slots[6]['date'], $this->getBaseTimeZone());
         $this->assertTrue($nextTuesdayDate->isTuesday());
         $this->assertNotEmpty(
             $slots[6]['times'],
@@ -434,6 +434,24 @@ class WorkTimeScheduleTest extends TestCase
             $expectedTimestamp,
             $endTimestamp,
         );
+    }
+
+    public function testGetNearestSlotExpectsSlot(): void
+    {
+        $expectedTime = '12:00';
+        $time = Carbon::now($this->getBaseTimeZone())->setTimeFromTimeString('11:49')->getTimestamp();
+        $schedule = WorkTimeGenerator::generateWithCustomSlots();
+        $slot = $schedule->getNearestSlot($time);
+
+        $this->assertEquals($expectedTime, $slot->getStart());
+    }
+
+    public function testGetNearestSlotExpectsNull(): void
+    {
+        $schedule = WorkTimeGenerator::generateWithEmptyDays();
+        $slot = $schedule->getNearestSlot(Carbon::now()->getTimestamp());
+
+        $this->assertNull($slot);
     }
 
     private function getCarbonNow(): Carbon
