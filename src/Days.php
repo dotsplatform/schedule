@@ -70,7 +70,7 @@ class Days extends Collection
     {
         $nearestSlot = null;
         $day = $this->createDateFromTimestamp($timestamp, $timezone);
-        for ($diffDays = 0; $diffDays < self::DAYS_IN_WEEK; $diffDays++) {
+        for ($diffDays = 0; $diffDays <= self::DAYS_IN_WEEK; $diffDays++) {
             $nearestSlot = $this->getNearestDaySlots($day, $timestamp, $timezone)->first();
             if ($nearestSlot) {
                 break;
