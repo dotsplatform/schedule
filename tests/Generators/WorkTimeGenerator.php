@@ -78,6 +78,29 @@ class WorkTimeGenerator
         return $workTime;
     }
 
+    public static function getInactiveWorkTime(array $data = []): WorkTimeSchedule
+    {
+        $workTime = [];
+
+        for ($i = 0; $i < 7; $i++) {
+            $workTime[$i] = $data[$i] ?? [
+                'id' => $i,
+                'status' => 0,
+                'slots' => [
+                    [
+                        'start' => '08:00',
+                        'end' => '23:00',
+                    ]
+                ],
+            ];
+        }
+
+        return WorkTimeSchedule::fromArray(array_merge([
+            'days' => $workTime,
+            'timezone' => self::getBaseTimeZone(),
+        ]));
+    }
+
     public static function generateScheduleForDayWithTwoSlotsNotActiveForTime(int $timestamp): WorkTimeSchedule
     {
         $time = Carbon::createFromTimestamp($timestamp, self::getBaseTimeZone());
