@@ -454,6 +454,26 @@ class WorkTimeScheduleTest extends TestCase
         $this->assertNull($slot);
     }
 
+    public function testGetNearestSlotIncludeThisDayOfTheNextWeek(): void
+    {
+        $date = Carbon::now();
+        $dayOfWeek = $date->dayOfWeek - 1;
+        $schedule = WorkTimeGenerator::getInactiveWorkTime([
+            $dayOfWeek => [
+                'id' => $dayOfWeek,
+                'status' => 1,
+                'slots' => [
+                    [
+                        'start' => '12:00',
+                        'end' => '23:00',
+                    ]
+                ],
+            ],
+        ]);
+        $slot = $schedule->getNearestSlot(Carbon::now()->getTimestamp());
+        $this->assertNotNull($slot);
+    }
+
     private function getCarbonNow(): Carbon
     {
         return Carbon::now($this->getBaseTimeZone());
