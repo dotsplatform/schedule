@@ -332,7 +332,7 @@ class WorkTimeScheduleTest extends TestCase
 
     public function testExpectsNextTuesdayIfCurrentAlreadyInactiveByTime(): void
     {
-        $time = $this->getCarbonNow()->setDaysFromStartOfWeek(2)->setTimeFromTimeString('15:00');
+        $time = $this->getCarbonNow()->setDaysFromStartOfWeek(1)->setTimeFromTimeString('15:00');
         $schedule = WorkTimeGenerator::generateWithCustomSlots([
             $time->dayOfWeekIso - 1 => [
                 'end' => '16:00'
