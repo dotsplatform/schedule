@@ -204,6 +204,6 @@ class WorkTimeGenerator
 
     private static function getBaseTimeZone(): string
     {
-        return 'Europe/Kiev';
+        return 'Europe/Kyiv';
     }
 }

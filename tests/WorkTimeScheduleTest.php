@@ -481,6 +481,6 @@ class WorkTimeScheduleTest extends TestCase
 
     private function getBaseTimeZone(): string
     {
-        return 'Europe/Kiev';
+        return 'Europe/Kyiv';
     }
 }
