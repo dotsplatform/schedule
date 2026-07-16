@@ -27,6 +27,19 @@ class Slot extends DTO
         parent::assertConstructDataIsValid($data);
     }
 
+    public function isOvernight(): bool
+    {
+        return $this->getEnd() < $this->getStart();
+    }
+
+    public function containsTimestamp(int $timestamp, int $dayReferenceTimestamp, string $timezone): bool
+    {
+        $start = $this->getDayStartTimeTimestamp($dayReferenceTimestamp, $timezone);
+        $end = $this->getDayEndTimeTimestamp($dayReferenceTimestamp, $timezone);
+
+        return $start <= $timestamp && $timestamp <= $end;
+    }
+
     public function getDayStartTimeTimestamp(int $timestamp, string $timezone): int
     {
         $day = Carbon::createFromTimestamp($timestamp, $timezone);
@@ -37,10 +50,14 @@ class Slot extends DTO
 
     public function getDayEndTimeTimestamp(int $timestamp, string $timezone): int
     {
-        $day = Carbon::createFromTimestamp($timestamp, $timezone);
-        return $day->startOfDay()
-            ->setTimeFromTimeString($this->getEnd())
-            ->getTimestamp();
+        $end = Carbon::createFromTimestamp($timestamp, $timezone)
+            ->startOfDay()
+            ->setTimeFromTimeString($this->getEnd());
+        if ($this->isOvernight()) {
+            $end->addDay();
+        }
+
+        return $end->getTimestamp();
     }
 
     public function getStartTimestamp(int $timestamp, string $timezone): int
@@ -52,9 +69,13 @@ class Slot extends DTO
 
     public function getEndTimestamp(int $timestamp, string $timezone): int
     {
-        return Carbon::createFromTimestamp($timestamp, $timezone)
-            ->setTimeFromTimeString($this->getEnd())
-            ->getTimestamp();
+        $end = Carbon::createFromTimestamp($timestamp, $timezone)
+            ->setTimeFromTimeString($this->getEnd());
+        if ($this->isOvernight()) {
+            $end->addDay();
+        }
+
+        return $end->getTimestamp();
     }
 
     public function getStartHours(): int
