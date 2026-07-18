@@ -109,13 +109,11 @@ class Days extends Collection
 
     public function isWorkingAtTime(int $timestamp, string $timezone): bool
     {
-        $day = $this->findDayForTimestamp($timestamp, $timezone);
-        if (!$day?->isActive()) {
-            return false;
+        if ($this->isTimestampWithinDaySlots($timestamp, $timestamp, $timezone)) {
+            return true;
         }
 
-        return $this->findFirstDaySlotStartTime($timestamp, $timezone) <= $timestamp &&
-            $this->findLastDaySlotEndTime($timestamp, $timezone) >= $timestamp;
+        return $this->isTimestampWithinPreviousDayOvernightSlots($timestamp, $timezone);
     }
 
     public function findSlotByEndTimestamp(int $timestamp, string $timezone): ?Slot
@@ -172,6 +170,25 @@ class Days extends Collection
         return $this->first(
             fn (Day $day) => $day->getId() === $id,
         );
+    }
+
+    private function isTimestampWithinPreviousDayOvernightSlots(int $timestamp, string $timezone): bool
+    {
+        $previousDayTimestamp = $this->createDateFromTimestamp($timestamp, $timezone)
+            ->subDay()
+            ->getTimestamp();
+
+        return $this->isTimestampWithinDaySlots($timestamp, $previousDayTimestamp, $timezone);
+    }
+
+    private function isTimestampWithinDaySlots(int $timestamp, int $dayReferenceTimestamp, string $timezone): bool
+    {
+        $day = $this->findDayForTimestamp($dayReferenceTimestamp, $timezone);
+        if (! $day?->isActive()) {
+            return false;
+        }
+
+        return $day->getSlots()->containsTimestamp($timestamp, $dayReferenceTimestamp, $timezone);
     }
 
     private function createDateFromTimestamp(int $timestamp, string $timezone): Carbon

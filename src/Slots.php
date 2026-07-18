@@ -39,11 +39,21 @@ class Slots extends Collection
         return $this->getNearestSlots($timestamp, $timezone)->first();
     }
 
+    public function containsTimestamp(int $timestamp, int $dayReferenceTimestamp, string $timezone): bool
+    {
+        foreach ($this->all() as $slot) {
+            if ($slot->containsTimestamp($timestamp, $dayReferenceTimestamp, $timezone)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function getNearestSlots(int $timestamp, string $timezone): static
     {
-        $time = $this->createTimeFromTimestamp($timestamp, $timezone);
         return $this->filter(
-            fn (Slot $slot) => ($slot->getEnd() > $time) && ($slot->getStart() > $time),
+            fn (Slot $slot) => $slot->getDayStartTimeTimestamp($timestamp, $timezone) > $timestamp,
         );
     }
 
@@ -52,7 +62,7 @@ class Slots extends Collection
         $slotsTimestamps = $this->map(
             fn (Slot $slot) => [
                 'start' => (clone $day)->setTimeFromTimeString($slot->getStart())->getTimestamp(),
-                'end' => (clone $day)->setTimeFromTimeString($slot->getEnd())->getTimestamp(),
+                'end' => $this->resolveSlotEndTimestamp($day, $slot),
             ],
         )->toArray();
 
@@ -61,24 +71,27 @@ class Slots extends Collection
 
     public function findSlotByEndTimestamp(int $timestamp, string $timezone): ?Slot
     {
-        $time = $this->createTimeFromTimestamp($timestamp, $timezone);
-
         return $this->first(
-            fn (Slot $slot) => $slot->getStart() < $time && $slot->getEnd() >= $time
+            fn (Slot $slot) => $slot->getDayStartTimeTimestamp($timestamp, $timezone) < $timestamp
+                && $slot->getDayEndTimeTimestamp($timestamp, $timezone) >= $timestamp,
         );
     }
 
     public function findSlotByStartTimestamp(int $timestamp, string $timezone): ?Slot
     {
-        $time = $this->createTimeFromTimestamp($timestamp, $timezone);
-
         return $this->first(
-            fn (Slot $slot) => $slot->getStart() <= $time && $slot->getEnd() > $time
+            fn (Slot $slot) => $slot->getDayStartTimeTimestamp($timestamp, $timezone) <= $timestamp
+                && $slot->getDayEndTimeTimestamp($timestamp, $timezone) > $timestamp,
         );
     }
 
-    private function createTimeFromTimestamp(int $timestamp, string $timezone): string
+    private function resolveSlotEndTimestamp(Carbon $day, Slot $slot): int
     {
-        return Carbon::createFromTimestamp($timestamp, $timezone)->format('H:i');
+        $end = (clone $day)->setTimeFromTimeString($slot->getEnd());
+        if ($slot->isOvernight()) {
+            $end->addDay();
+        }
+
+        return $end->getTimestamp();
     }
 }

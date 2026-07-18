@@ -4,6 +4,7 @@ namespace Tests;
 
 use Carbon\Carbon;
 use Dots\Day;
+use Dots\Slot;
 use Dots\WorkTimeSchedule;
 use Tests\Generators\SlotGenerator;
 use Tests\Generators\WorkTimeGenerator;
@@ -472,6 +473,89 @@ class WorkTimeScheduleTest extends TestCase
         ]);
         $slot = $schedule->getNearestSlot(Carbon::now()->getTimestamp());
         $this->assertNotNull($slot);
+    }
+
+    public function testIsWorkingAtTimeExpectsYesForOvernightSlotBeforeMidnight(): void
+    {
+        $schedule = $this->generateOvernightSchedule('12:00', '02:00');
+        $beforeMidnight = $this->overnightDayDate()->setTimeFromTimeString('23:00');
+
+        $this->assertTrue($schedule->isWorkingAtTime($beforeMidnight->getTimestamp()));
+    }
+
+    public function testIsWorkingAtTimeExpectsYesForOvernightSlotAfterMidnight(): void
+    {
+        $schedule = $this->generateOvernightSchedule('12:00', '02:00');
+        $afterMidnight = $this->overnightDayDate()->addDay()->setTimeFromTimeString('01:00');
+
+        $this->assertTrue($schedule->isWorkingAtTime($afterMidnight->getTimestamp()));
+    }
+
+    public function testIsWorkingAtTimeExpectsNoForOvernightSlotAfterClose(): void
+    {
+        $schedule = $this->generateOvernightSchedule('12:00', '02:00');
+        $afterClose = $this->overnightDayDate()->addDay()->setTimeFromTimeString('03:00');
+
+        $this->assertFalse($schedule->isWorkingAtTime($afterClose->getTimestamp()));
+    }
+
+    public function testIsWorkingAtTimeExpectsNoForOvernightSlotBeforeOpen(): void
+    {
+        $schedule = $this->generateOvernightSchedule('12:00', '02:00');
+        $beforeOpen = $this->overnightDayDate()->setTimeFromTimeString('11:00');
+
+        $this->assertFalse($schedule->isWorkingAtTime($beforeOpen->getTimestamp()));
+    }
+
+    public function testIsWorkingAtTimeExpectsNoDuringBreakBetweenSlots(): void
+    {
+        $dayId = $this->overnightDayDate()->dayOfWeekIso - 1;
+        $schedule = WorkTimeGenerator::getInactiveWorkTime([
+            $dayId => [
+                'id' => $dayId,
+                'status' => 1,
+                'slots' => [
+                    ['start' => '12:00', 'end' => '14:00'],
+                    ['start' => '16:00', 'end' => '02:00'],
+                ],
+            ],
+        ]);
+        $duringBreak = $this->overnightDayDate()->setTimeFromTimeString('15:00');
+
+        $this->assertFalse($schedule->isWorkingAtTime($duringBreak->getTimestamp()));
+    }
+
+    public function testGetDayEndTimeTimestampRollsToNextDayForOvernightSlot(): void
+    {
+        $slot = Slot::fromArray(['start' => '12:00', 'end' => '02:00']);
+        $day = $this->overnightDayDate()->setTimeFromTimeString('20:00');
+        $expected = (clone $day)->startOfDay()->addDay()->setTimeFromTimeString('02:00');
+
+        $this->assertTrue($slot->isOvernight());
+        $this->assertEquals(
+            $expected->getTimestamp(),
+            $slot->getDayEndTimeTimestamp($day->getTimestamp(), $this->getBaseTimeZone()),
+        );
+    }
+
+    private function generateOvernightSchedule(string $start, string $end): WorkTimeSchedule
+    {
+        $dayId = $this->overnightDayDate()->dayOfWeekIso - 1;
+
+        return WorkTimeGenerator::getInactiveWorkTime([
+            $dayId => [
+                'id' => $dayId,
+                'status' => 1,
+                'slots' => [
+                    ['start' => $start, 'end' => $end],
+                ],
+            ],
+        ]);
+    }
+
+    private function overnightDayDate(): Carbon
+    {
+        return Carbon::createFromFormat('Y-m-d H:i', '2023-07-13 00:00', $this->getBaseTimeZone());
     }
 
     private function getCarbonNow(): Carbon
