@@ -34,6 +34,13 @@ class Slots extends Collection
         return new static($slots);
     }
 
+    public function filterActive(): static
+    {
+        return $this->filter(
+            fn (Slot $slot) => $slot->isActive(),
+        );
+    }
+
     public function findNearestSlot(int $timestamp, string $timezone): ?Slot
     {
         return $this->getNearestSlots($timestamp, $timezone)->first();

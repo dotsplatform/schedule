@@ -538,6 +538,83 @@ class WorkTimeScheduleTest extends TestCase
         );
     }
 
+    public function testGenerateTranslatedSlotsByDaysExpectsInactiveSlotIsSkipped(): void
+    {
+        $day = $this->getCarbonNow()->addDay()->startOfDay();
+        $schedule = $this->generateScheduleWithSlots($day, [
+            ['start' => '10:00', 'end' => '11:00', 'status' => Slot::STATUS_ACTIVE],
+            ['start' => '11:00', 'end' => '12:00', 'status' => Slot::STATUS_INACTIVE],
+            ['start' => '12:00', 'end' => '13:00', 'status' => Slot::STATUS_ACTIVE],
+        ]);
+
+        $slots = $schedule->getTimestampsSlotsByDays($day->getTimestamp(), 1);
+
+        $this->assertCount(2, $slots[0]['times']);
+        $this->assertEquals(
+            (clone $day)->setTimeFromTimeString('10:00')->getTimestamp(),
+            $slots[0]['times'][0]['start'],
+        );
+        $this->assertEquals(
+            (clone $day)->setTimeFromTimeString('12:00')->getTimestamp(),
+            $slots[0]['times'][1]['start'],
+        );
+    }
+
+    public function testGenerateTranslatedSlotsByDaysExpectsDaySkippedWhenAllSlotsAreInactive(): void
+    {
+        $day = $this->getCarbonNow()->addDay()->startOfDay();
+        $schedule = $this->generateScheduleWithSlots($day, [
+            ['start' => '10:00', 'end' => '11:00', 'status' => Slot::STATUS_INACTIVE],
+        ]);
+
+        $slots = $schedule->getTimestampsSlotsByDays($day->getTimestamp(), 1);
+
+        $this->assertEmpty($slots);
+    }
+
+    public function testFindSlotByStartTimestampExpectsInactiveSlotIsStillFound(): void
+    {
+        $day = $this->getCarbonNow()->addDay()->startOfDay();
+        $schedule = $this->generateScheduleWithSlots($day, [
+            ['start' => '10:00', 'end' => '11:00', 'status' => Slot::STATUS_INACTIVE],
+        ]);
+
+        $slot = $schedule->findSlotByStartTimestamp(
+            (clone $day)->setTimeFromTimeString('10:00')->getTimestamp(),
+            $this->getBaseTimeZone(),
+        );
+
+        $this->assertNotNull($slot);
+        $this->assertFalse($slot->isActive());
+    }
+
+    public function testSlotExpectsOwnMaxOrdersIsKept(): void
+    {
+        $day = $this->getCarbonNow()->addDay()->startOfDay();
+        $schedule = $this->generateScheduleWithSlots($day, [
+            ['start' => '10:00', 'end' => '11:00', 'maxOrders' => 3],
+            ['start' => '11:00', 'end' => '12:00'],
+        ]);
+
+        $slots = $schedule->getDays()->findDay($day->dayOfWeekIso - 1)->getSlots();
+
+        $this->assertEquals(3, $slots->first()->getMaxOrders());
+        $this->assertNull($slots->last()->getMaxOrders());
+    }
+
+    private function generateScheduleWithSlots(Carbon $day, array $slots): WorkTimeSchedule
+    {
+        $dayId = $day->dayOfWeekIso - 1;
+
+        return WorkTimeGenerator::getInactiveWorkTime([
+            $dayId => [
+                'id' => $dayId,
+                'status' => Day::STATUS_ACTIVE,
+                'slots' => $slots,
+            ],
+        ]);
+    }
+
     private function generateOvernightSchedule(string $start, string $end): WorkTimeSchedule
     {
         $dayId = $this->overnightDayDate()->dayOfWeekIso - 1;

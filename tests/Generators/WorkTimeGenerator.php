@@ -9,6 +9,7 @@ namespace Tests\Generators;
 
 use Carbon\Carbon;
 use Dots\Day;
+use Dots\Slot;
 use Dots\WorkTimeSchedule;
 
 class WorkTimeGenerator
@@ -72,6 +73,8 @@ class WorkTimeGenerator
                 [
                     'start' => '08:00',
                     'end' => '08:00',
+                    'status' => Slot::STATUS_ACTIVE,
+                    'maxOrders' => null,
                 ]
             ],
         ], $data);
@@ -90,6 +93,9 @@ class WorkTimeGenerator
                     [
                         'start' => '08:00',
                         'end' => '23:00',
+                        'status' => Slot::STATUS_ACTIVE,
+                    'maxOrders' => null,
+                        'maxOrders' => null,
                     ]
                 ],
             ];
@@ -138,6 +144,9 @@ class WorkTimeGenerator
                     [
                         'start' => '08:00',
                         'end' => '23:00',
+                        'status' => Slot::STATUS_ACTIVE,
+                    'maxOrders' => null,
+                        'maxOrders' => null,
                     ]
                 ],
             ];
@@ -156,6 +165,9 @@ class WorkTimeGenerator
                     [
                         'start' => '08:00',
                         'end' => '23:00',
+                        'status' => Slot::STATUS_ACTIVE,
+                    'maxOrders' => null,
+                        'maxOrders' => null,
                     ]
                 ],
             ];

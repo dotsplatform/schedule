@@ -13,8 +13,13 @@ use Dots\Exceptions\InvalidSlotTimeReceived;
 
 class Slot extends DTO
 {
+    public const STATUS_ACTIVE = 1;
+    public const STATUS_INACTIVE = 0;
+
     protected string $start;
     protected string $end;
+    protected int $status = self::STATUS_ACTIVE;
+    protected ?int $maxOrders = null;
 
     protected function assertConstructDataIsValid(array $data): void
     {
@@ -106,5 +111,20 @@ class Slot extends DTO
     public function getEnd(): string
     {
         return $this->end;
+    }
+
+    public function getStatus(): int
+    {
+        return $this->status;
+    }
+
+    public function isActive(): bool
+    {
+        return $this->getStatus() === self::STATUS_ACTIVE;
+    }
+
+    public function getMaxOrders(): ?int
+    {
+        return $this->maxOrders;
     }
 }
