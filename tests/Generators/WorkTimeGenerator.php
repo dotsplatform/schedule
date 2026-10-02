@@ -74,7 +74,7 @@ class WorkTimeGenerator
                     'start' => '08:00',
                     'end' => '08:00',
                     'status' => Slot::STATUS_ACTIVE,
-                    'maxOrders' => null,
+                    'capacity' => null,
                 ]
             ],
         ], $data);
@@ -94,8 +94,8 @@ class WorkTimeGenerator
                         'start' => '08:00',
                         'end' => '23:00',
                         'status' => Slot::STATUS_ACTIVE,
-                    'maxOrders' => null,
-                        'maxOrders' => null,
+                    'capacity' => null,
+                        'capacity' => null,
                     ]
                 ],
             ];
@@ -145,8 +145,8 @@ class WorkTimeGenerator
                         'start' => '08:00',
                         'end' => '23:00',
                         'status' => Slot::STATUS_ACTIVE,
-                    'maxOrders' => null,
-                        'maxOrders' => null,
+                    'capacity' => null,
+                        'capacity' => null,
                     ]
                 ],
             ];
@@ -166,8 +166,8 @@ class WorkTimeGenerator
                         'start' => '08:00',
                         'end' => '23:00',
                         'status' => Slot::STATUS_ACTIVE,
-                    'maxOrders' => null,
-                        'maxOrders' => null,
+                    'capacity' => null,
+                        'capacity' => null,
                     ]
                 ],
             ];

@@ -66,7 +66,7 @@ class Slots extends Collection
 
     public function getDaySlotsTimestamps(Carbon $day): array
     {
-        $slotsTimestamps = $this->map(
+        $slotsTimestamps = $this->filterActive()->map(
             fn (Slot $slot) => [
                 'start' => (clone $day)->setTimeFromTimeString($slot->getStart())->getTimestamp(),
                 'end' => $this->resolveSlotEndTimestamp($day, $slot),
