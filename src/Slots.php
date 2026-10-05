@@ -34,6 +34,13 @@ class Slots extends Collection
         return new static($slots);
     }
 
+    public function filterActive(): static
+    {
+        return $this->filter(
+            fn (Slot $slot) => $slot->isActive(),
+        );
+    }
+
     public function findNearestSlot(int $timestamp, string $timezone): ?Slot
     {
         return $this->getNearestSlots($timestamp, $timezone)->first();
@@ -59,7 +66,7 @@ class Slots extends Collection
 
     public function getDaySlotsTimestamps(Carbon $day): array
     {
-        $slotsTimestamps = $this->map(
+        $slotsTimestamps = $this->filterActive()->map(
             fn (Slot $slot) => [
                 'start' => (clone $day)->setTimeFromTimeString($slot->getStart())->getTimestamp(),
                 'end' => $this->resolveSlotEndTimestamp($day, $slot),

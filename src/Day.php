@@ -27,11 +27,12 @@ class Day extends DTO
 
     public function getNearestSlots(Carbon $dayDate, int $timestamp, string $timezone): Slots
     {
+        $activeSlots = $this->getSlots()->filterActive();
         if ($this->isSameDay($dayDate, $timestamp, $timezone)) {
-            return $this->getSlots()->getNearestSlots($timestamp, $timezone);
+            return $activeSlots->getNearestSlots($timestamp, $timezone);
         }
 
-        return $this->getSlots();
+        return $activeSlots;
     }
 
     public function isSameDay(Carbon $dayDate, int $timestamp, string $timezone): bool
