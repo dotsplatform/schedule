@@ -104,7 +104,7 @@ class Days extends Collection
             return false;
         }
 
-        return $this->findLastDaySlotEndTime($timestamp, $timezone) > $timestamp;
+        return $this->findLastDaySlotClosingTime($timestamp, $timezone) > $timestamp;
     }
 
     public function isWorkingAtTime(int $timestamp, string $timezone): bool
@@ -170,6 +170,14 @@ class Days extends Collection
         return $this->first(
             fn (Day $day) => $day->getId() === $id,
         );
+    }
+
+    private function findLastDaySlotClosingTime(int $timestamp, string $timezone): ?int
+    {
+        $dayTime = $this->createDateFromTimestamp($timestamp, $timezone);
+        $day = $this->findDayForTime($dayTime);
+
+        return $day?->getSlots()->last()?->getDayClosingTimestamp($dayTime->getTimestamp(), $timezone);
     }
 
     private function isTimestampWithinPreviousDayOvernightSlots(int $timestamp, string $timezone): bool
