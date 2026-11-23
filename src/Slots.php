@@ -80,7 +80,7 @@ class Slots extends Collection
     {
         return $this->first(
             fn (Slot $slot) => $slot->getDayStartTimeTimestamp($timestamp, $timezone) < $timestamp
-                && $slot->getDayEndTimeTimestamp($timestamp, $timezone) >= $timestamp,
+                && $slot->getDayLastSecondTimestamp($timestamp, $timezone) >= $timestamp,
         );
     }
 
@@ -88,7 +88,7 @@ class Slots extends Collection
     {
         return $this->first(
             fn (Slot $slot) => $slot->getDayStartTimeTimestamp($timestamp, $timezone) <= $timestamp
-                && $slot->getDayEndTimeTimestamp($timestamp, $timezone) > $timestamp,
+                && $slot->getDayClosingTimestamp($timestamp, $timezone) > $timestamp,
         );
     }
 
