@@ -22,15 +22,21 @@ class Slot extends DTO
      */
     public const string END_OF_DAY_TIME = '23:59';
 
+    public const int MAX_ORDER_DEADLINE_DAYS_BEFORE = 7;
+
+    private const string TIME_FORMAT_PATTERN = '/^(?:[01]\d|2[0-3]):[0-5]\d$/';
+
     protected string $start;
     protected string $end;
     protected int $status = self::STATUS_ACTIVE;
     protected ?int $capacity = null;
+    protected ?string $orderDeadline = null;
+    protected ?int $orderDeadlineDaysBefore = null;
 
     protected function assertConstructDataIsValid(array $data): void
     {
-        $startResult = preg_match('/^(?:[01]\d|2[0-3]):[0-5]\d$/', $data['start'] ?? null);
-        $endResult = preg_match('/^(?:[01]\d|2[0-3]):[0-5]\d$/', $data['end'] ?? null);
+        $startResult = preg_match(self::TIME_FORMAT_PATTERN, $data['start'] ?? null);
+        $endResult = preg_match(self::TIME_FORMAT_PATTERN, $data['end'] ?? null);
         if (!$startResult || !$endResult) {
             throw new InvalidSlotTimeReceived('Invalid time received');
         }
@@ -176,5 +182,51 @@ class Slot extends DTO
     public function getCapacity(): ?int
     {
         return $this->capacity;
+    }
+
+    public function getOrderDeadline(): ?string
+    {
+        return $this->orderDeadline;
+    }
+
+    public function getOrderDeadlineDaysBefore(): ?int
+    {
+        return $this->orderDeadlineDaysBefore;
+    }
+
+    public function hasOrderDeadline(): bool
+    {
+        $orderDeadline = $this->getOrderDeadline();
+        if ($orderDeadline === null) {
+            return false;
+        }
+
+        return preg_match(self::TIME_FORMAT_PATTERN, $orderDeadline) === 1;
+    }
+
+    public function getOrderDeadlineTimestamp(int $slotStartTimestamp, string $timezone): ?int
+    {
+        if (!$this->hasOrderDeadline()) {
+            return null;
+        }
+
+        // Calendar days: closed weekdays between the deadline and the slot are not skipped.
+        $daysBefore = $this->getOrderDeadlineDaysBefore() ?? 0;
+
+        return Carbon::createFromTimestamp($slotStartTimestamp, $timezone)
+            ->startOfDay()
+            ->subDays($daysBefore)
+            ->setTimeFromTimeString($this->getOrderDeadline())
+            ->getTimestamp();
+    }
+
+    public function isOrderDeadlinePassed(int $slotStartTimestamp, int $nowTimestamp, string $timezone): bool
+    {
+        $orderDeadlineTimestamp = $this->getOrderDeadlineTimestamp($slotStartTimestamp, $timezone);
+        if ($orderDeadlineTimestamp === null) {
+            return false;
+        }
+
+        return $nowTimestamp >= $orderDeadlineTimestamp;
     }
 }

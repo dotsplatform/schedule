@@ -75,6 +75,8 @@ class WorkTimeGenerator
                     'end' => '08:00',
                     'status' => Slot::STATUS_ACTIVE,
                     'capacity' => null,
+                    'orderDeadline' => null,
+                    'orderDeadlineDaysBefore' => null,
                 ]
             ],
         ], $data);
@@ -94,8 +96,9 @@ class WorkTimeGenerator
                         'start' => '08:00',
                         'end' => '23:00',
                         'status' => Slot::STATUS_ACTIVE,
-                    'capacity' => null,
                         'capacity' => null,
+                        'orderDeadline' => null,
+                        'orderDeadlineDaysBefore' => null,
                     ]
                 ],
             ];
@@ -145,8 +148,9 @@ class WorkTimeGenerator
                         'start' => '08:00',
                         'end' => '23:00',
                         'status' => Slot::STATUS_ACTIVE,
-                    'capacity' => null,
                         'capacity' => null,
+                        'orderDeadline' => null,
+                        'orderDeadlineDaysBefore' => null,
                     ]
                 ],
             ];
@@ -166,8 +170,9 @@ class WorkTimeGenerator
                         'start' => '08:00',
                         'end' => '23:00',
                         'status' => Slot::STATUS_ACTIVE,
-                    'capacity' => null,
                         'capacity' => null,
+                        'orderDeadline' => null,
+                        'orderDeadlineDaysBefore' => null,
                     ]
                 ],
             ];
